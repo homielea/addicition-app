@@ -9,11 +9,16 @@ function RankedBars<T extends string>({
   title,
   data,
   barColor,
+  totalSlips,
 }: {
   title: string;
   data: Ranked<T>[];
   barColor: string;
+  totalSlips: number;
 }) {
+  // One or two logs can't support percentages — "stress · 100%" off a single
+  // debrief reads as a verdict, not a pattern. Shares and bars wait for n≥3.
+  const showShares = totalSlips >= 3;
   return (
     <Card>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -22,17 +27,19 @@ function RankedBars<T extends string>({
           <View style={styles.rowHeader}>
             <Text style={styles.rowLabel}>{row.key}</Text>
             <Text style={styles.rowCount}>
-              {row.count}× · {Math.round(row.share * 100)}%
+              {showShares ? `${row.count}× · ${Math.round(row.share * 100)}%` : `${row.count}×`}
             </Text>
           </View>
-          <View style={styles.track}>
-            <View
-              style={[
-                styles.fill,
-                { width: `${Math.max(6, Math.round(row.share * 100))}%`, backgroundColor: barColor },
-              ]}
-            />
-          </View>
+          {showShares && (
+            <View style={styles.track}>
+              <View
+                style={[
+                  styles.fill,
+                  { width: `${Math.max(6, Math.round(row.share * 100))}%`, backgroundColor: barColor },
+                ]}
+              />
+            </View>
+          )}
         </View>
       ))}
     </Card>
@@ -59,12 +66,30 @@ export default function DangerMap() {
     <Screen>
       <Title>Your danger map</Title>
       <Subtitle>
-        {slips.length} {slips.length === 1 ? 'debrief' : 'debriefs'}, ranked into
-        patterns. This is what your urges look like from above.
+        {slips.length === 1
+          ? 'One debrief so far — early sightings, not yet a pattern. A couple more and the ranking starts meaning something.'
+          : slips.length === 2
+            ? 'Two debriefs so far — early sightings, not yet a pattern. One more and the ranking starts meaning something.'
+            : `${slips.length} debriefs, ranked into patterns. This is what your urges look like from above.`}
       </Subtitle>
-      <RankedBars title="Top triggers" data={rankedTriggers(slips)} barColor={colors.danger} />
-      <RankedBars title="Risky times of day" data={rankedBuckets(slips)} barColor={colors.amber} />
-      <RankedBars title="Feelings underneath" data={rankedFeelings(slips)} barColor={colors.accent} />
+      <RankedBars
+        title="Top triggers"
+        data={rankedTriggers(slips)}
+        barColor={colors.danger}
+        totalSlips={slips.length}
+      />
+      <RankedBars
+        title="Risky times of day"
+        data={rankedBuckets(slips)}
+        barColor={colors.amber}
+        totalSlips={slips.length}
+      />
+      <RankedBars
+        title="Feelings underneath"
+        data={rankedFeelings(slips)}
+        barColor={colors.accent}
+        totalSlips={slips.length}
+      />
     </Screen>
   );
 }
