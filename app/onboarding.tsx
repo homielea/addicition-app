@@ -2,9 +2,9 @@ import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useStore } from '../src/store';
-import { colors, radius, spacing } from '../src/theme';
+import { colors, radius, spacing, type } from '../src/theme';
 import { Behavior, BEHAVIOR_LABELS } from '../src/types';
-import { Button, Card, Chip, ChipRow, Screen, Subtitle, Title } from '../src/ui';
+import { Button, Card, CaseHeader, Chip, ChipRow, Screen } from '../src/ui';
 
 const BEHAVIORS = Object.keys(BEHAVIOR_LABELS) as Behavior[];
 
@@ -17,12 +17,11 @@ export default function Onboarding() {
 
   return (
     <Screen>
-      <Title>Your slip is intel, not failure.</Title>
-      <Subtitle>
-        Most apps lose you the day you slip. This one gets more useful. Every slip
-        becomes a 60-second debrief, and every debrief sharpens your personal danger
-        map — so the next urge has less room to work with.
-      </Subtitle>
+      <CaseHeader
+        eyebrow="case opened · today"
+        title="Your slip is intel, not failure."
+        sub="Most apps lose you the day you slip. This one gets more useful. Every slip becomes a 60-second debrief, and every debrief sharpens your personal danger map — so the next urge has less room to work with."
+      />
 
       <Card>
         <Text style={styles.rule}>Three ground rules:</Text>
@@ -47,6 +46,7 @@ export default function Onboarding() {
         <View style={styles.inputWrap}>
           <TextInput
             style={styles.input}
+            accessibilityLabel="Name what you are stepping back from"
             placeholder="Name it in your own words"
             placeholderTextColor={colors.muted}
             value={custom}
@@ -69,12 +69,10 @@ export default function Onboarding() {
 }
 
 const styles = StyleSheet.create({
-  rule: { color: colors.text, fontSize: 16, fontWeight: '600', marginBottom: spacing.sm },
+  rule: { ...type.title, marginBottom: spacing.sm },
   ruleItem: { color: colors.muted, fontSize: 15, lineHeight: 24 },
   question: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '600',
+    ...type.title,
     marginTop: spacing.md,
     marginBottom: spacing.md,
   },

@@ -3,8 +3,8 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { nudgesFrom } from '../src/insights';
 import { behaviorLabel, useStore } from '../src/store';
-import { colors, spacing } from '../src/theme';
-import { Button, Card, Screen, Subtitle, Title } from '../src/ui';
+import { colors, font, spacing, type } from '../src/theme';
+import { Button, Card, CaseHeader, Screen, TallyBoard } from '../src/ui';
 
 export default function Home() {
   const hydrated = useStore((s) => s.hydrated);
@@ -21,14 +21,18 @@ export default function Home() {
 
   return (
     <Screen>
-      <Title>Relapse Autopsy</Title>
-      <Subtitle>Stepping back from {label}. Slips are intel here.</Subtitle>
+      <CaseHeader
+        eyebrow={`field log · ${label}`}
+        title="Relapse Autopsy"
+        sub="Slips are intel here. Every one you log makes future urges easier to see coming."
+      />
 
-      <Card style={styles.metricCard}>
+      <Card grid style={styles.metricCard}>
         <Text style={styles.metricNumber}>{insightReps}</Text>
         <Text style={styles.metricLabel}>
           insight {insightReps === 1 ? 'rep' : 'reps'}
         </Text>
+        <TallyBoard count={insightReps} />
         <Text style={styles.metricHint}>
           This number only goes up. Every debrief — including after a slip — adds a
           rep. There is nothing to reset.
@@ -58,20 +62,25 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  metricCard: { alignItems: 'center', paddingVertical: spacing.xl },
-  metricNumber: { color: colors.accent, fontSize: 64, fontWeight: '800' },
+  metricCard: { alignItems: 'center', paddingVertical: spacing.lg },
+  metricNumber: {
+    color: colors.accent,
+    fontSize: 56,
+    lineHeight: 60,
+    fontFamily: font.display,
+  },
   metricLabel: {
+    ...type.mono,
     color: colors.text,
-    fontSize: 18,
-    fontWeight: '600',
     marginBottom: spacing.sm,
   },
   metricHint: {
     color: colors.muted,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 19,
     textAlign: 'center',
     paddingHorizontal: spacing.md,
+    marginTop: spacing.sm,
   },
   noJudgment: {
     color: colors.muted,
@@ -82,6 +91,6 @@ const styles = StyleSheet.create({
   },
   linksRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
   linkCol: { flex: 1 },
-  nudgeTitle: { color: colors.amber, fontSize: 14, fontWeight: '700', marginBottom: spacing.xs },
+  nudgeTitle: { ...type.eyebrow, marginBottom: spacing.xs },
   nudgeBody: { color: colors.text, fontSize: 15, lineHeight: 22 },
 });

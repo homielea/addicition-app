@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Ranked, rankedBuckets, rankedFeelings, rankedTriggers } from '../src/insights';
 import { useStore } from '../src/store';
-import { colors, radius, spacing } from '../src/theme';
-import { Card, Screen, Subtitle, Title } from '../src/ui';
+import { colors, radius, spacing, type } from '../src/theme';
+import { Card, CaseHeader, Screen, Subtitle, Title } from '../src/ui';
 
 function RankedBars<T extends string>({
   title,
@@ -20,7 +20,7 @@ function RankedBars<T extends string>({
   // debrief reads as a verdict, not a pattern. Shares and bars wait for n≥3.
   const showShares = totalSlips >= 3;
   return (
-    <Card>
+    <Card grid={showShares}>
       <Text style={styles.sectionTitle}>{title}</Text>
       {data.map((row) => (
         <View key={row.key} style={styles.row}>
@@ -64,14 +64,17 @@ export default function DangerMap() {
 
   return (
     <Screen>
-      <Title>Your danger map</Title>
-      <Subtitle>
-        {slips.length === 1
-          ? 'One debrief so far — early sightings, not yet a pattern. A couple more and the ranking starts meaning something.'
-          : slips.length === 2
-            ? 'Two debriefs so far — early sightings, not yet a pattern. One more and the ranking starts meaning something.'
-            : `${slips.length} debriefs, ranked into patterns. This is what your urges look like from above.`}
-      </Subtitle>
+      <CaseHeader
+        eyebrow={`terrain · ${slips.length} ${slips.length === 1 ? 'debrief' : 'debriefs'} on file`}
+        title="Your danger map"
+        sub={
+          slips.length === 1
+            ? 'One debrief so far — early sightings, not yet a pattern. A couple more and the ranking starts meaning something.'
+            : slips.length === 2
+              ? 'Two debriefs so far — early sightings, not yet a pattern. One more and the ranking starts meaning something.'
+              : 'This is what your urges look like from above.'
+        }
+      />
       <RankedBars
         title="Top triggers"
         data={rankedTriggers(slips)}
@@ -87,7 +90,7 @@ export default function DangerMap() {
       <RankedBars
         title="Feelings underneath"
         data={rankedFeelings(slips)}
-        barColor={colors.accent}
+        barColor={colors.steelBlue}
         totalSlips={slips.length}
       />
     </Screen>
@@ -96,9 +99,7 @@ export default function DangerMap() {
 
 const styles = StyleSheet.create({
   sectionTitle: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '700',
+    ...type.title,
     marginBottom: spacing.md,
   },
   row: { marginBottom: spacing.md },
@@ -108,12 +109,12 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   rowLabel: { color: colors.text, fontSize: 15 },
-  rowCount: { color: colors.muted, fontSize: 13 },
+  rowCount: { ...type.mono },
   track: {
     height: 8,
-    borderRadius: radius.pill,
+    borderRadius: radius.sm,
     backgroundColor: colors.cardRaised,
     overflow: 'hidden',
   },
-  fill: { height: 8, borderRadius: radius.pill },
+  fill: { height: 8, borderRadius: radius.sm },
 });
